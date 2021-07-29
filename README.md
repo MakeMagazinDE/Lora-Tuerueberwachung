@@ -6,14 +6,13 @@ Maker Media GmbH
 
 # Türüberwachung mit LoRa
 
-### 
-
+### Alarm- und Überwachungskontakt mit Batteriebetrieb und drahtloser Übertragung
 
 ![Picture](https://github.com/MakeMagazinDE/Lora-Tuerueberwachung/blob/master/aufm_gh_k.JPG) 
 
 Sie suchen eine Möglichkeit, Türen und Tore netzunabhängig zu überwachen? Sie möchten informiert werden, wenn die Tür zu einer bestimmten Zeit nicht den erwarteten Zustand hat? Dann könnte sie dieses kleine Projekt interessieren. 
 
-Den vollständigen Artikel mit der Bauanleitung gibt es in der [Make-Ausgabe 5/19 ab Seite 118](https://www.heise.de/select/make/2019/5/1571592996373573).
+Den vollständigen Artikel mit der Bauanleitung gibt es in der [Make-Ausgabe 4/21 ab Seite 104](https://www.heise.de/select/make/2021/4).
 
 ### Material Sendemodul:
 * STM32L031 Nucleo-32 Evalboard
