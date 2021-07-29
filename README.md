@@ -15,7 +15,7 @@ Sie suchen eine Möglichkeit, Türen und Tore netzunabhängig zu überwachen? Si
 
 Den vollständigen Artikel mit der Bauanleitung gibt es in der [Make-Ausgabe 5/19 ab Seite 118](https://www.heise.de/select/make/2019/5/1571592996373573).
 
-### Material - Sendemodul:
+### Material Sendemodul:
 * STM32L031 Nucleo-32 Evalboard
 * AI-Thinker Ra-02 -Modulmit SX1278
 * Antenne
@@ -33,3 +33,16 @@ Den vollständigen Artikel mit der Bauanleitung gibt es in der [Make-Ausgabe 5/1
 * Schrauben zur Montage (je nach Material auf dem das Modul montiert wird)
 * Silikon oder 2-Komponentenkleber zum Abdichten
 
+### Material Empfangsmodul:
+* ESP32-S WiFi Bluetooth Development Board 0,96 OLED
+* AI-Thinker Ra-02-Modul mit SX1278
+* Antenne
+* Antennenkabel
+* Seeed-Studio-Modul Grove-Speaker
+* USB-Netzteil
+* Gehäuse
+* Abstandsbolzen
+* Kunststoffschrauben
+* Buchsenleiste
+* Lochrasterplatine
+* Kupferlackdraht 0,2mm zur Verdrahtung
