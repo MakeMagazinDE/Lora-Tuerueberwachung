@@ -46,3 +46,5 @@ Den vollständigen Artikel mit der Bauanleitung gibt es in der [Make-Ausgabe 5/1
 * Buchsenleiste
 * Lochrasterplatine
 * Kupferlackdraht 0,2mm zur Verdrahtung
+
+Das Software-Projekt für den Sender befindet sich im Verzeichnis ChickenDoor, das für den Empfänger im Verzeichnis ChickenHouse.
