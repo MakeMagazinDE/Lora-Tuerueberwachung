@@ -48,3 +48,5 @@ Den vollständigen Artikel mit der Bauanleitung gibt es in der [Make-Ausgabe 5/1
 * Kupferlackdraht 0,2mm zur Verdrahtung
 
 Das Software-Projekt für den Sender befindet sich im Verzeichnis ChickenDoor, das für den Empfänger im Verzeichnis ChickenHouse.
+
+Das PDF ChickenHouseWoNucleo.pdf enthält einen Schaltplan ohne Nucleo-Board, falls der Mikrocontroller direkt eingesetzt werden soll (optional).
