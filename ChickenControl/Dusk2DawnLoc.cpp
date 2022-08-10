@@ -2,28 +2,12 @@
 //  Dusk2DawnLoc.cpp
 /// @file
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Contains functions to get information about todays sunset and sunrise
 ///
-/// <Please fill out with the extended description!>
-///
-/// @see <Cross reference to other classes ...>
-///
-/// @copyright 2017-2021 Hodapp GmbH & Co. KG - All Rights Reserved
-///
-/// @status  Draft
 /// $Date:$
 /// $Revision:$
 /// $LastChangedBy:$
-/// @creator  Eike Mueller(TABO)
 ///
-/// @todo <[optional] There are open issues?>
-/// @todo <[optional] It is possible that the description of an open issue in
-///                   coding is longer than a complete line. So when we search
-///                   the word 'todo' in code, we found only the first line of
-///                   the todo.
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -54,6 +38,7 @@
 //-----------------------------------------------------------------------------
 // Global members of the module
 //-----------------------------------------------------------------------------
+/// Dusk2Dawn instance
 Dusk2Dawn destination(LATITUDE, LONGITUDE, TIMEZONE);
 
 //-----------------------------------------------------------------------------
@@ -64,6 +49,16 @@ Dusk2Dawn destination(LATITUDE, LONGITUDE, TIMEZONE);
 // Implementation
 //-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
+//  Function GetSunriseForToday
+///
+/// @brief Gets the sunrise for today
+///
+/// @return Todays sunrise in (unit minutes)
+///
+/// @see GetSunsetForToday()
+///
+//-----------------------------------------------------------------------------
 int GetSunriseForToday(void)
 {
    struct tm timeinfo;
@@ -84,6 +79,16 @@ int GetSunriseForToday(void)
    return sunrise;
 }
 
+//-----------------------------------------------------------------------------
+//  Function GetSunsetForToday
+///
+/// @brief Gets the sunset for today
+///
+/// @return Todays sunset in (unit minutes)
+///
+/// @see GetSunriseForToday()
+///
+//-----------------------------------------------------------------------------
 int GetSunsetForToday(void)
 {
    struct tm timeinfo;

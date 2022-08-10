@@ -2,28 +2,12 @@
 //  GpioDefs.h
 /// @file
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Contains all GPIO definitions
 ///
-/// <Please fill out with the extended description!>
-///
-/// @see <Cross reference to other classes ...>
-///
-/// @copyright 2013-2021 Hodapp GmbH & Co. KG - All Rights Reserved
-///
-/// @status  Draft
 /// $Date:$
-/// $Revision$
+/// $Revision:$
 /// $LastChangedBy:$
-/// @creator  Eike Mueller(TABO)
 ///
-/// @todo <[optional] There are open issues?>
-/// @todo <[optional] It is possible that the description of an open issue in
-///                   coding is longer than a complete line. So when we search
-///                   the word 'todo' in code, we found only the first line of
-///                   the todo.
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
 #ifndef __GPIODEFS_H
  #define __GPIODEFS_H
@@ -39,24 +23,42 @@
 //-----------------------------------------------------------------------------
 // Definitions ,macros and constants
 //-----------------------------------------------------------------------------
+/// ESP32 Gpio pin 0
 #define GPIO0           0
+/// ESP32 Gpio pin 16
 #define GPIO16          16
+/// ESP32 Gpio pin 2
 #define GPIO2           2
+/// ESP32 Gpio pin 5
 #define GPIO5           5
+/// ESP32 Gpio pin 4
 #define GPIO4           4
+/// ESP32 Gpio pin 25
 #define GPIO25          25
+/// ESP32 Gpio pin 39
+#define GPIO39          39
 
+// Spi for LORA module connection
+/// ESP32 Pin MISO
 #define HSPI_MISO       12
+/// ESP32 Pin MOSI
 #define HSPI_MOSI       13
+/// ESP32 Pin SCLK
 #define HSPI_SCLK       14
+/// ESP32 Pin SS
 #define HSPI_SS         15
 
+// I2C for oled
+/// ESP32 Pin SDA
 #define OLED_SDA        GPIO5
+/// ESP32 Pin SCL
 #define OLED_SCL        GPIO4
-
+/// I2C address oled module
 #define OLED_ADDRESS    0x3c
 
+/// Red led
 #define RED_LED         GPIO0
+/// Green led
 #define GREEN_LED       GPIO2
 
 //-----------------------------------------------------------------------------
@@ -66,7 +68,5 @@
 //-----------------------------------------------------------------------------
 // Prototypes of public functions
 //-----------------------------------------------------------------------------
-
-
 
 #endif //__GPIODEFS_H

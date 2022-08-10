@@ -26,6 +26,8 @@
 #include "Dusk2DawnLoc.h"
 #include "ChickenControlData.h"
 #include "LoRa.h"
+#include "KeyCheck.h"
+#include "DisplayCtrl.h"
 
 //-----------------------------------------------------------------------------
 // Private definitions, macros and constants
@@ -201,6 +203,24 @@ void InitTaskSystem(void)
    ,  NULL 
    ,  ARDUINO_RUNNING_CORE);
 
+   xTaskCreatePinnedToCore(
+   TaskKeyCheck
+   ,  "tKeyChk"
+   ,  8192
+   ,  NULL
+   ,  2
+   ,  NULL 
+   ,  ARDUINO_RUNNING_CORE);
+
+   xTaskCreatePinnedToCore(
+   TaskDisplayCtrl
+   ,  "tDspCtrl"
+   ,  8192
+   ,  NULL
+   ,  2
+   ,  NULL 
+   ,  ARDUINO_RUNNING_CORE);
+
    semaChickenHouseData = xSemaphoreCreateMutex();
 }
 
@@ -265,6 +285,7 @@ void CalculateReminder(void)
    {
       if (dayMinutsLastReminder == 0 || dayMinuts - dayMinutsLastReminder > REMINDER_INTERVAL_MIN || dayMinuts < dayMinutsLastReminder)
       {
+         StartDisplayOn();
          QueueInSoundToPlay(SOUND_FOX_YOU_STOLE_THE_GOOSE);
          dayMinutsLastReminder = dayMinuts;
       }

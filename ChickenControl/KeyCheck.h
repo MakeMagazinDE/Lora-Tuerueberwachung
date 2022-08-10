@@ -1,16 +1,16 @@
 //-----------------------------------------------------------------------------
-//  PlaySound.h
+//  KeyCheck.h
 /// @file
 ///
-/// @brief Header for the module PlaySound.cpp
+/// @brief Header for the module KeyCheck.cpp
 ///
 /// $Date:$
 /// $Revision:$
 /// $LastChangedBy:$
 ///
 //-----------------------------------------------------------------------------
-#ifndef __PLAYSOUND_H
- #define __PLAYSOUND_H
+#ifndef __KEYCHECK_H
+ #define __KEYCHECK_H
 
 //-----------------------------------------------------------------------------
 // Standard include files
@@ -23,24 +23,15 @@
 //-----------------------------------------------------------------------------
 // Definitions ,macros and constants
 //-----------------------------------------------------------------------------
-// Sound id
-/// Piano sound (wav file)
-#define SOUND_PIANO     0
-/// Rooster sound (wav file)
-#define SOUND_ROOSTER   1
-/// Song 'Fox you stole the goose' (synthetic)
-#define SOUND_FOX_YOU_STOLE_THE_GOOSE 2
 
 //-----------------------------------------------------------------------------
-// Data types
+// Datatypes
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 // Prototypes of public functions
 //-----------------------------------------------------------------------------
+// Task function of the key check task
+void TaskKeyCheck (void * pvParameters);
 
-void TaskPlaySound( void *pvParameters );
-void CreatePlaySoundQueue(void);
-void QueueInSoundToPlay(unsigned long sound);
-
-#endif //__PLAYSOUND_H
+#endif //__KEYCHECK_H

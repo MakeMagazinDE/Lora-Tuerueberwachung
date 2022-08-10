@@ -25,6 +25,7 @@
 #include "Utilities.h"
 #include "Dusk2DawnLoc.h"
 #include "ChickenControlData.h"
+#include "DisplayCtrl.h"
 
 #include "Images/ChickenSymbol.h"
 #include "Images/BatterySymbol.h"
@@ -60,22 +61,38 @@ int screenH = 64;
 int screenCenterX = screenW/2;
 /// Center of the screen y-axis
 int screenCenterY = ((screenH-16)/2)+16;   // top yellow part is 16 px height
+/// Flag: Switch the display on in the task main loop
+bool switchDisplayOn = false;
+/// Flag: Switch the display off in the task main loop
+bool swichtDisplayOff = false;
 
 //-----------------------------------------------------------------------------
 // Prototypes of private functions
 //-----------------------------------------------------------------------------
-void startFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
-void digitalClockFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
-void sunriseFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
-void sunsetFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
-void batteryVoltageFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
-void temperatureFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
-void statusFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
-
-void clockOverlay(OLEDDisplay *display, OLEDDisplayUiState* state);
-
-void displayBatterySymbol(OLEDDisplay *display);
-void displayRssi(OLEDDisplay *display);
+// Draws the start frame of the application
+static void startFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+// Draws the digital clock frame of the application (current system time)
+static void digitalClockFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+// Draws the sunrise frame of the application
+static void sunriseFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+// Draws the sunset frame of the application
+static void sunsetFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+// Draws an rectangle frame in the complete display
+static void rectangleFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+// Draws the battery voltage frame
+static void batteryVoltageFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+// Draws the temperature frame
+static void temperatureFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+// Draws the status frame (error case)
+static void statusFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+// Dummy overlay function
+static void clockOverlay(OLEDDisplay *display, OLEDDisplayUiState* state);
+// Draws the battery symbol with the current battery state
+static void displayBatterySymbol(OLEDDisplay *display);
+// Draws the rssi value
+static void displayRssi(OLEDDisplay *display);
+// Process the display on/off state
+static void ProcessDisplayOnOff(void);
 
 /// Frame list a start of the system
 FrameCallback startframes[] = { startFrame };
@@ -99,10 +116,6 @@ int frameCount = 6;
 //  Function InitDisplayUi
 ///
 /// @brief Initializes the display user interface
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller
-/// @status  Draft
 ///
 //-----------------------------------------------------------------------------
 void InitDisplayUi(void)
@@ -134,12 +147,8 @@ void InitDisplayUi(void)
 ///
 /// @param[in] y - <parameter description>
 ///
-/// @date    2021-01-15
-/// @author  Eike Mueller
-/// @status  Draft
-///
 //-----------------------------------------------------------------------------
-void startFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
+static void startFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
 {
    display->drawXbm(0, 0, CHICKEN_SYMBOL_WIDTH, CHICKEN_SYMBOL_HEIGHT, ChickenSymbol);
 
@@ -153,7 +162,7 @@ void startFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int1
    display->setFont(ArialMT_Plain_16);
    display->drawString(96 , screenCenterY - 15, timenow );
 
-   String version = "V1.1";
+   String version = "V1.2";
    display->setTextAlignment(TEXT_ALIGN_CENTER);
    display->setFont(ArialMT_Plain_16);
    display->drawString(96 , screenCenterY + 5, version );
@@ -168,16 +177,12 @@ void startFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int1
 ///
 /// @param[in,out] state - Ui state
 ///
-/// @param[in] x - <parameter description>
+/// @param[in] x - x Position
 ///
-/// @param[in] y - <parameter description>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller
-/// @status  Draft
+/// @param[in] y - y Position
 ///
 //-----------------------------------------------------------------------------
-void digitalClockFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
+static void digitalClockFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
 {
    struct tm timeinfo;
 
@@ -204,28 +209,18 @@ void digitalClockFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t 
 //-----------------------------------------------------------------------------
 //  Function  sunriseFrame
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Draws the sunrise frame of the application
 ///
-/// <Please fill out with the extended description!>
+/// @param[in,out] *display - Oled display user interface object
 ///
-/// @param[in,out] *display - <parameter description>
+/// @param[in,out] state - Ui state
 ///
-/// @param[in,out] state - <parameter description>
+/// @param[in] x - x Position
 ///
-/// @param[in,out] x - <parameter description>
+/// @param[in] y - y Position
 ///
-/// @param[in,out] y - <parameter description>
-///
-/// @see <References, optional>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller(TABO)
-/// @status  Draft
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
-void sunriseFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
+static void sunriseFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
 {
    int sunrise  = GetSunriseForToday();
 
@@ -246,28 +241,18 @@ void sunriseFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, in
 //-----------------------------------------------------------------------------
 //  Function  sunsetFrame
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Draws the sunset frame of the application
 ///
-/// <Please fill out with the extended description!>
+/// @param[in,out] *display - Oled display user interface object
 ///
-/// @param[in,out] *display - <parameter description>
+/// @param[in,out] state - Ui state
 ///
-/// @param[in,out] state - <parameter description>
+/// @param[in] x - x Position
 ///
-/// @param[in,out] x - <parameter description>
+/// @param[in] y - y Position
 ///
-/// @param[in,out] y - <parameter description>
-///
-/// @see <References, optional>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller(TABO)
-/// @status  Draft
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
-void sunsetFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
+static void sunsetFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
 {
    int sunset  = GetSunsetForToday();
 
@@ -288,22 +273,12 @@ void sunsetFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int
 //-----------------------------------------------------------------------------
 //  Function  displayBatterySymbol
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Draws the battery symbol with the current battery state
 ///
-/// <Please fill out with the extended description!>
+/// @param[in] *display - Oled display user interface object
 ///
-/// @param[in,out] *display - <parameter description>
-///
-/// @see <References, optional>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller(TABO)
-/// @status  Draft
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
-void displayBatterySymbol(OLEDDisplay *display)
+static void displayBatterySymbol(OLEDDisplay *display)
 {
    uint8_t batteryFuelPct;
 
@@ -338,22 +313,12 @@ void displayBatterySymbol(OLEDDisplay *display)
 //-----------------------------------------------------------------------------
 //  Function  displayRssi
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Draws the rssi value
 ///
-/// <Please fill out with the extended description!>
+/// @param[in] *display - Oled display user interface object
 ///
-/// @param[in,out] *display - <parameter description>
-///
-/// @see <References, optional>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller(TABO)
-/// @status  Draft
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
-void displayRssi(OLEDDisplay *display)
+static void displayRssi(OLEDDisplay *display)
 {
    String rssi = String(GetLastRssi());
    display->setTextAlignment(TEXT_ALIGN_RIGHT);
@@ -364,28 +329,18 @@ void displayRssi(OLEDDisplay *display)
 //-----------------------------------------------------------------------------
 //  Function  rectangleFrame
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Draws an rectangle frame in the complete display
 ///
-/// <Please fill out with the extended description!>
+/// @param[in,out] *display - Oled display user interface object
 ///
-/// @param[in,out] *display - <parameter description>
+/// @param[in,out] state - Ui state
 ///
-/// @param[in,out] state - <parameter description>
+/// @param[in] x - x Position
 ///
-/// @param[in,out] x - <parameter description>
+/// @param[in] y - y Position
 ///
-/// @param[in,out] y - <parameter description>
-///
-/// @see <References, optional>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller(TABO)
-/// @status  Draft
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
-void rectangleFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
+static void rectangleFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
 {
    display->drawRect(0,0,128,64);
    display->fillRect(0,0,128,64);
@@ -394,28 +349,18 @@ void rectangleFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, 
 //-----------------------------------------------------------------------------
 //  Function  statusFrame
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Draws the status frame (error case)
 ///
-/// <Please fill out with the extended description!>
+/// @param[in,out] *display - Oled display user interface object
 ///
-/// @param[in,out] *display - <parameter description>
+/// @param[in,out] state - Ui state
 ///
-/// @param[in,out] state - <parameter description>
+/// @param[in] x - x Position
 ///
-/// @param[in,out] x - <parameter description>
+/// @param[in] y - y Position
 ///
-/// @param[in,out] y - <parameter description>
-///
-/// @see <References, optional>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller(TABO)
-/// @status  Draft
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
-void statusFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
+static void statusFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
 {
    if (!GetChickenHouseConnected())
    {
@@ -439,28 +384,18 @@ void statusFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int
 //-----------------------------------------------------------------------------
 //  Function  batteryVoltageFrame
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Draws the battery voltage frame
 ///
-/// <Please fill out with the extended description!>
+/// @param[in,out] *display - Oled display user interface object
 ///
-/// @param[in,out] *display - <parameter description>
+/// @param[in,out] state - Ui state
 ///
-/// @param[in,out] state - <parameter description>
+/// @param[in] x - x Position
 ///
-/// @param[in,out] x - <parameter description>
+/// @param[in] y - y Position
 ///
-/// @param[in,out] y - <parameter description>
-///
-/// @see <References, optional>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller(TABO)
-/// @status  Draft
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
-void batteryVoltageFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
+static void batteryVoltageFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
 {
    char buff[10];
 
@@ -482,28 +417,18 @@ void batteryVoltageFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_
 //-----------------------------------------------------------------------------
 //  Function  temperatureFrame
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Draws the temperature frame
 ///
-/// <Please fill out with the extended description!>
+/// @param[in,out] *display - Oled display user interface object
 ///
-/// @param[in,out] *display - <parameter description>
+/// @param[in,out] state - Ui state
 ///
-/// @param[in,out] state - <parameter description>
+/// @param[in] x - x Position
 ///
-/// @param[in,out] x - <parameter description>
+/// @param[in] y - y Position
 ///
-/// @param[in,out] y - <parameter description>
-///
-/// @see <References, optional>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller(TABO)
-/// @status  Draft
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
-void temperatureFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
+static void temperatureFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y)
 {
    char buff[10];
 
@@ -525,48 +450,29 @@ void temperatureFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x
 //-----------------------------------------------------------------------------
 //  Function  clockOverlay
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Dummy overlay function
 ///
-/// <Please fill out with the extended description!>
+/// @param[in,out] *display - Oled display user interface object
 ///
-/// @param[in,out] *display - <parameter description>
+/// @param[in,out] state - Ui state
 ///
-/// @param[in,out] state - <parameter description>
-///
-/// @see <References, optional>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller(TABO)
-/// @status  Draft
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
-void clockOverlay(OLEDDisplay *display, OLEDDisplayUiState* state)
+static void clockOverlay(OLEDDisplay *display, OLEDDisplayUiState* state)
 {
-
 }
 
 //-----------------------------------------------------------------------------
 //  Function  TaskUpdateUi
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Task function of the update ui task
 ///
-/// <Please fill out with the extended description!>
+/// @param[in] *pvParameters - Task parameters (not used)
 ///
-/// @param[in,out] *pvParameters - <parameter description>
-///
-/// @see <References, optional>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller(TABO)
-/// @status  Draft
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
 void TaskUpdateUi( void *pvParameters )
 {
+   display.displayOff();
+
    // The ESP is capable of rendering 60fps in 80Mhz mode
 	// but that won't give you much time for anything else
 	// run it in 160Mhz mode or just set it to 30 fps
@@ -598,13 +504,13 @@ void TaskUpdateUi( void *pvParameters )
 
    display.flipScreenVertically();
 
+   StartDisplayOn();
+
    for(;;)
    {
       vTaskDelay(100);
 
-      //BuildUserInterface();
-
-      //CalculateReminder();
+      ProcessDisplayOnOff();
 
       int remainingTimeBudget = ui.update();
 
@@ -621,18 +527,10 @@ void TaskUpdateUi( void *pvParameters )
 //-----------------------------------------------------------------------------
 //  Function  EnableStatusFrame
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Enables the status frame
 ///
-/// <Please fill out with the extended description!>
+/// @see DisableStatusFrame()
 ///
-/// @see <References, optional>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller(TABO)
-/// @status  Draft
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
 void EnableStatusFrame(void)
 {
@@ -655,18 +553,10 @@ void EnableStatusFrame(void)
 //-----------------------------------------------------------------------------
 //  Function  DisableStatusFrame
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Disables the status frame
 ///
-/// <Please fill out with the extended description!>
+/// @see EnableStatusFrame()
 ///
-/// @see <References, optional>
-///
-/// @date    2021-01-15
-/// @author  Eike Mueller(TABO)
-/// @status  Draft
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
 void DisableStatusFrame(void)
 {
@@ -680,5 +570,54 @@ void DisableStatusFrame(void)
       ui.init();
 
       display.flipScreenVertically();
+   }
+}
+
+//-----------------------------------------------------------------------------
+//  Function DisplayOn
+///
+/// @brief Switches the display on
+///
+/// @see DisplayOff()
+///
+//-----------------------------------------------------------------------------
+void DisplayOn(void)
+{
+   switchDisplayOn = true;
+}
+
+//-----------------------------------------------------------------------------
+//  Function DisplayOff
+///
+/// @brief Switches the display off
+///
+/// @see DisplayOn()
+///
+//-----------------------------------------------------------------------------
+void DisplayOff(void)
+{
+   swichtDisplayOff = true;
+}
+
+//-----------------------------------------------------------------------------
+//  Function ProcessDisplayOnOff
+///
+/// @brief Processes the display on/off-request from outside the task
+///
+/// @see DisplayOn(), DisplayOff()
+///
+//-----------------------------------------------------------------------------
+static void ProcessDisplayOnOff(void)
+{
+   if (switchDisplayOn)
+   {
+      display.displayOn();
+      switchDisplayOn = false;
+   }
+
+   if (swichtDisplayOff)
+   {
+      display.displayOff();
+      swichtDisplayOff = false;
    }
 }

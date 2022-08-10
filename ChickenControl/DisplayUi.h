@@ -2,28 +2,12 @@
 //  DisplayUi.h
 /// @file
 ///
-/// @brief <Please fill out with the short description!>
+/// @brief Header for the module DisplayUi.cpp
 ///
-/// <Please fill out with the extended description!>
+/// $Date: $
+/// $Revision: $
+/// $LastChangedBy: $
 ///
-/// @see <Cross reference to other classes ...>
-///
-/// @copyright 2013-2021 Hodapp GmbH & Co. KG - All Rights Reserved
-///
-/// @status  Draft
-/// $Date:$
-/// $Revision$
-/// $LastChangedBy:$
-/// @creator  Eike Mueller(TABO)
-///
-/// @todo <[optional] There are open issues?>
-/// @todo <[optional] It is possible that the description of an open issue in
-///                   coding is longer than a complete line. So when we search
-///                   the word 'todo' in code, we found only the first line of
-///                   the todo.
-///
-/// @todo <This comment was placed in by a macro. Please fill out all the field
-///        in brackets with useful informations.>
 //-----------------------------------------------------------------------------
 #ifndef __DISPLAYUI_H
  #define __DISPLAYUI_H
@@ -48,8 +32,15 @@
 // Prototypes of public functions
 //-----------------------------------------------------------------------------
 
+// Initializes the display user interface
 void InitDisplayUi(void);
+// Enables the status frame
 void EnableStatusFrame(void);
+// Disables the status frame
 void DisableStatusFrame(void);
+// Switches the display on
+void DisplayOn(void);
+// Switches the display off
+void DisplayOff(void);
 
 #endif //__DISPLAYUI_H
