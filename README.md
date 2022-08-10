@@ -21,6 +21,7 @@ In der Softwareversion V1.2 ist die Anzeige ist jetzt nur noch aktiv:
 *	1 Minute nachdem der Taster SW1 gedrückt wurde
 *	1 Minute nachdem die Erinnerung aktiviert wurde, dass die Tür des Hühnerstalles noch geöffnet ist
 
+Hierfür ist ein Taster bei der Empfangeinheit nachzurüsten (siehe Schaltung_Taster_neu.png), der die Anzeige aktiviert.
 
 ### Material Sendemodul:
 * STM32L031 Nucleo-32 Evalboard
