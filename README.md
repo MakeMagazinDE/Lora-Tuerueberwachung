@@ -17,9 +17,9 @@ Den vollständigen Artikel mit der Bauanleitung gibt es in der [Make-Ausgabe 4/2
 **Nachtrag:** Das System läuft mittlerweile seit gut 18 Monaten problemlos und zuverlässig. Alle Hühner sind lebendig und glücklich. Allerdings zeigen sich Probleme beim OLED-Display der Empfangseinheit. Da das Display permanent eingeschaltet ist, geht die Leuchtstärke der einzelnen Pixel teilweise sehr stark zurück. Wie bei OLED-Displays üblich sich die Pixel am stärksten betroffen, die am häufigsten aktiv eingeschaltet waren.
 
 In der Softwareversion V1.2 ist die Anzeige ist jetzt nur noch aktiv:
-•	1 Minute nach dem Start der Empfangseinheit
-•	1 Minute nachdem der Taster SW1 gedrückt wurde
-•	1 Minute nachdem die Erinnerung aktiviert wurde, dass die Tür des Hühnerstalles noch geöffnet ist
+*	1 Minute nach dem Start der Empfangseinheit
+*	1 Minute nachdem der Taster SW1 gedrückt wurde
+*	1 Minute nachdem die Erinnerung aktiviert wurde, dass die Tür des Hühnerstalles noch geöffnet ist
 
 
 ### Material Sendemodul:
